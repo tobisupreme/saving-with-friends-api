@@ -38,10 +38,12 @@ export class UserContactDto {
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => value.trim())
-  firstName: string;
+  @IsOptional()
+  firstName?: string;
 
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   @IsOptional()
   @Transform(({ value }) => value.trim())
   middleName?: string;
@@ -49,11 +51,13 @@ export class UserContactDto {
   @IsString()
   @IsNotEmpty()
   @Transform(({ value }) => value.trim())
-  lastName: string;
+  @IsOptional()
+  lastName?: string;
 
   @IsPhoneNumber()
   @IsNotEmpty()
-  phone: string;
+  @IsOptional()
+  phone?: string;
 }
 
 export class SignUpUserDto {

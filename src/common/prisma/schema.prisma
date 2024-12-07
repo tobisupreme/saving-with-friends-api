@@ -47,10 +47,10 @@ model User {
 
 model UserContact {
   id         Int      @id @default(autoincrement())
-  firstName  String   @db.VarChar
+  firstName  String?  @db.VarChar
   middleName String?  @db.VarChar
-  lastName   String   @db.VarChar
-  phone      String   @db.VarChar(20)
+  lastName   String?  @db.VarChar
+  phone      String?  @db.VarChar(20)
   status     Boolean  @default(true)
   createdBy  Int?
   createdAt  DateTime @default(dbgenerated("now()")) @db.Timestamptz(6)
