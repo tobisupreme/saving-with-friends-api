@@ -1,5 +1,5 @@
 {
-  "name": "mobann-web-be",
+  "name": "saving-with-friends-be",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -24,6 +24,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@datalust/winston-seq": "^2.0.0",
     "@faker-js/faker": "^8.4.1",
     "@nestjs/cache-manager": "^2.2.0",
     "@nestjs/common": "^10.0.0",
@@ -40,17 +41,20 @@
     "cache-manager-redis-yet": "^4.1.2",
     "check-password-strength": "^2.0.7",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.1",
     "dotenv": "^16.3.1",
     "google-libphonenumber": "^3.2.34",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
     "nanoid": "3.3.4",
+    "nest-winston": "^1.9.7",
     "nestjs-real-ip": "^3.0.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "winston": "^3.17.0",
+    "winston-transport": "^4.9.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
@@ -67,7 +71,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "jest": "^29.5.0",
     "prettier": "^3.0.0",
-    "prisma": "^5.12.1",
+    "prisma": "^6.1.0",
     "source-map-support": "^0.5.21",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.0",
