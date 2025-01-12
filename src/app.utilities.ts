@@ -30,6 +30,31 @@ export class AppUtilities {
     return new Date();
   }
 
+  public static removeExtraSpaces(item: string) {
+    return (
+      item &&
+      item
+        .replace(/^\s+|\s+$/g, '')
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .split(' ')
+        .join(' ')
+    );
+  }
+
+  public static removeExtraSpacesAndCapitalise(item: string) {
+    return (
+      item &&
+      item
+        .replace(/^\s+|\s+$/g, '')
+        .replace(/\s+/g, ' ')
+        .toLowerCase()
+        .split(' ')
+        .map((str) => str[0].toUpperCase() + str.slice(1))
+        .join(' ')
+    );
+  }
+
   public static getRegionCodeForNumber(phone: string) {
     const phoneUtil = PhoneNumberUtil.getInstance();
     return phoneUtil.getRegionCodeForNumber(phoneUtil.parse(phone));
@@ -104,7 +129,7 @@ export class AppUtilities {
   public static async validatePassword(
     password: string,
     hashedPassword: string,
-  ): Promise<Boolean> {
+  ): Promise<boolean> {
     return compare(password, hashedPassword);
   }
 
