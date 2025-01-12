@@ -26,7 +26,7 @@ export class PaginationOptionsDto {
 
   @ApiHideProperty()
   @IsOptional()
-  orderBy?: string;
+  orderBy?: any;
 
   @IsEnum(SortDirection)
   @IsOptional()

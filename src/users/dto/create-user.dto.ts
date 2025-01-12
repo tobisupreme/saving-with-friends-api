@@ -8,6 +8,7 @@ import {
   IsOptional,
   IsPhoneNumber,
   IsString,
+  IsStrongPassword,
   Length,
   ValidateNested,
 } from 'class-validator';
@@ -31,6 +32,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsStrongPassword()
   password: string;
 }
 

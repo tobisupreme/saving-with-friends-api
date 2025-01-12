@@ -98,7 +98,7 @@ export abstract class CrudService<D extends Delegate, T extends CrudMapType> {
     return result;
   }
 
-  public async findMany(data: T['findMany']) {
+  public async findMany<K>(data: T['findMany']): Promise<K[]> {
     return this.delegate.findMany(data);
   }
 
