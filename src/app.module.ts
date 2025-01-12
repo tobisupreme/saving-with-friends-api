@@ -6,6 +6,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import appConfig from './app.config';
+import { TransactionsModule } from './transactions/transactions.module';
 import { CoreUserModule } from './users/user.module';
 
 @Global()
@@ -26,6 +27,7 @@ import { CoreUserModule } from './users/user.module';
       inject: [ConfigService],
     }),
     CoreUserModule,
+    TransactionsModule,
   ],
   controllers: [],
   providers: [JwtStrategy],
