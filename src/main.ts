@@ -9,10 +9,18 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app.module';
+import { transports } from './logger/winston.config';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const loggerInstance = WinstonModule.createLogger({
+    transports: transports,
+  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger: loggerInstance,
+  });
   const configService = app.get<ConfigService>(ConfigService);
 
   const appPort = configService.get('app.port');
