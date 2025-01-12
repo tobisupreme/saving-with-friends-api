@@ -23,24 +23,25 @@ enum PasswordStrength {
 }
 
 model User {
-  id                Int         @id @default(autoincrement())
-  username          String?     @db.VarChar(20)
-  email             String      @unique() @db.VarChar(50)
+  id                Int           @id @default(autoincrement())
+  username          String?       @db.VarChar(20)
+  email             String        @unique() @db.VarChar(50)
   gender            Gender?
-  password          String      @db.VarChar(255)
-  passwordUpdatedAt DateTime?   @default(now()) @db.Timestamptz(6)
-  passwordLockedAt  DateTime?   @db.Timestamptz(6)
-  passwordHistory   Json?       @db.JsonB
-  passwordAttempt   Int?        @db.SmallInt
-  lastLogin         DateTime?   @db.Timestamptz(6)
-  lastLoginIp       String?     @db.VarChar(20)
-  status            Boolean     @default(true)
-  contactId         Int         @unique
-  contact           UserContact @relation(fields: [contactId], references: [id])
+  password          String        @db.VarChar(255)
+  passwordUpdatedAt DateTime?     @default(now()) @db.Timestamptz(6)
+  passwordLockedAt  DateTime?     @db.Timestamptz(6)
+  passwordHistory   Json?         @db.JsonB
+  passwordAttempt   Int?          @db.SmallInt
+  lastLogin         DateTime?     @db.Timestamptz(6)
+  lastLoginIp       String?       @db.VarChar(20)
+  status            Boolean       @default(true)
+  contactId         Int           @unique
+  contact           UserContact   @relation(fields: [contactId], references: [id])
   createdBy         Int?
   updatedBy         Int?
-  createdAt         DateTime    @default(dbgenerated("now()")) @db.Timestamptz(6)
-  updatedAt         DateTime    @default(dbgenerated("now()")) @updatedAt @db.Timestamptz(6)
+  createdAt         DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
+  transactions      Transaction[]
 
   @@map("users")
 }
@@ -53,13 +54,13 @@ model UserContact {
   phone      String?  @db.VarChar(20)
   status     Boolean  @default(true)
   createdBy  Int?
-  createdAt  DateTime @default(dbgenerated("now()")) @db.Timestamptz(6)
-  updatedAt  DateTime @default(dbgenerated("now()")) @updatedAt @db.Timestamptz(6)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
   updatedBy  Int?
 
   User User?
 
-  @@map("contact")
+  @@map("contacts")
 }
 
 model PasswordPolicy {
@@ -73,10 +74,38 @@ model PasswordPolicy {
   allowedAttempts       Int              @db.SmallInt
   lockDuration          String?
   status                Boolean          @default(true) @db.Boolean
-  createdAt             DateTime         @default(dbgenerated("now()")) @db.Timestamptz(6)
+  createdAt             DateTime         @default(now()) @db.Timestamptz(6)
   createdBy             Int?
-  updatedAt             DateTime         @default(dbgenerated("now()")) @updatedAt @db.Timestamptz(6)
+  updatedAt             DateTime         @default(now()) @updatedAt @db.Timestamptz(6)
   updatedBy             Int?
 
   @@map("password_policy")
+}
+
+model Transaction {
+  id          Int             @id @default(autoincrement())
+  amount      Decimal
+  balance     Decimal
+  type        TransactionType
+  description String?
+  status      Boolean         @default(true) @db.Boolean
+  createdAt   DateTime        @default(now()) @db.Timestamptz(6)
+  createdBy   Int
+  user        User            @relation(fields: [createdBy], references: [id])
+  updatedAt   DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
+  updatedBy   Int?
+
+  @@map("transactions")
+}
+
+model Balance {
+  id     Int     @id @default(autoincrement())
+  amount Decimal
+
+  @@map("balances")
+}
+
+enum TransactionType {
+  Deposit
+  Withdraw
 }
