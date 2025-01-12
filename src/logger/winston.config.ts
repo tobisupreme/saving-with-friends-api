@@ -1,5 +1,6 @@
 import { SeqTransport } from '@datalust/winston-seq';
 import * as winston from 'winston';
+import { Green, Red, Yellow } from './console-text';
 
 const consoleTransport = new winston.transports.Console({
   format: winston.format.combine(
@@ -11,7 +12,10 @@ const consoleTransport = new winston.transports.Console({
       const level = info.level.toUpperCase();
       const message = info.message;
       const context = info.context ? `[${info.context}]` : '';
-      return `[Nest] ${process.pid} - ${timestamp}    ${level} ${context} ${message}`;
+      const colorToUse = level === 'ERROR' ? Red : Green;
+      const part1 = colorToUse(`[Nest] ${process.pid}`);
+      const part2 = colorToUse(`${level}`);
+      return `${part1} - ${timestamp}    ${part2} ${Yellow(`${context}`)} ${colorToUse(`${message}`)}`;
     }),
   ),
 });
