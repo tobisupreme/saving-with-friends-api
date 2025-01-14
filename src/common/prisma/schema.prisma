@@ -43,7 +43,23 @@ model User {
   updatedAt         DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
   transactions      Transaction[]
 
+  activityLogs  UserActivityLog[]
+  userCampaigns CampaignUser[]
+
   @@map("users")
+}
+
+model UserActivityLog {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  activityType    String   @map("activity_type") @db.VarChar(50)
+  activityDetails Json?    @map("activity_details") @db.JsonB
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, activityType])
+  @@map("user_activity_logs")
 }
 
 model UserContact {
@@ -95,7 +111,14 @@ model Transaction {
   updatedAt   DateTime        @default(now()) @updatedAt @db.Timestamptz(6)
   updatedBy   Int?
 
+  transactionCampaigns CampaignTransactions[]
+
   @@map("transactions")
+}
+
+enum TransactionType {
+  Deposit
+  Withdraw
 }
 
 model Balance {
@@ -105,7 +128,45 @@ model Balance {
   @@map("balances")
 }
 
-enum TransactionType {
-  Deposit
-  Withdraw
+model Campaign {
+  id                   Int                    @id @default(autoincrement())
+  balance              Decimal
+  shortDescription     String
+  longDescription      String
+  campaignType         String
+  startDate            DateTime?              @db.Timestamptz(6)
+  endDate              DateTime?              @db.Timestamptz(6)
+  campaignUsers        CampaignUser[]
+  campaignTransactions CampaignTransactions[]
+
+  @@map("campaigns")
+}
+
+model CampaignUser {
+  id         Int      @id @default(autoincrement())
+  userId     Int      @map("user_id")
+  campaignId Int      @map("campaign_id")
+  status     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, campaignId])
+  @@map("campaign_users")
+}
+
+model CampaignTransactions {
+  id            Int         @id @default(autoincrement())
+  campaignId    Int         @map("campaign_id")
+  transactionId Int         @map("transaction_id")
+  balanceAfter  Decimal     @map("balance_after")
+  status        Boolean     @default(true)
+  createdAt     DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+  campaign      Campaign    @relation(fields: [campaignId], references: [id])
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+
+  @@index([campaignId, transactionId])
+  @@map("campaign_transactions")
 }
