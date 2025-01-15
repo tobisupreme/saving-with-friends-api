@@ -39,7 +39,7 @@ const configuration = {
         .split(',')
         .map((origin) => new RegExp(origin.replace(/\s/g, '')));
     })(env('CORS_ORIGIN', '*')),
-    credentials: env('CORS_CREDENTIALS', true),
+    credentials: env('CORS_CREDENTIALS', 'true').toLowerCase() === 'true',
   },
 
   db: {

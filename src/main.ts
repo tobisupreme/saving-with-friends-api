@@ -29,6 +29,8 @@ async function bootstrap() {
   const appDescription = configService.get('app.desciption');
   const corsOptions = configService.get('cors');
 
+  app.setGlobalPrefix('api');
+
   initSwagger(app, {
     appDescription,
     appHost: [{ url: configService.get('app.host') }],

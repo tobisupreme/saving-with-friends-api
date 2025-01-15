@@ -56,7 +56,10 @@ export class AuthService {
         passwordUpdatedAt: user.passwordUpdatedAt,
       }))
     ) {
-      throw new UnauthorizedException('Invalid credentials!');
+      throw new UnauthorizedException({
+        code: 'INVALID_CREDENTIALS',
+        message: 'Invalid credentials!',
+      });
     }
 
     const payloadToSign: JwtSignPayload = {
