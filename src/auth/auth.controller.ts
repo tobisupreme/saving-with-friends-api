@@ -1,4 +1,4 @@
-import { SignUpUserDto } from '@@/users/dto/create-user.dto';
+import { SignUpDto } from '@@/users/dto';
 import { CoreUserService } from '@@/users/user.service';
 import { Body, Controller, Post, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,7 +15,7 @@ export class AuthController {
     private userService: CoreUserService,
   ) {}
 
-  @Post('signin')
+  @Post('login')
   async signIn(
     @Body() signInDto: SignInDto,
     @Res({ passthrough: true }) response: Response,
@@ -25,7 +25,16 @@ export class AuthController {
   }
 
   @Post('signup')
-  async signUp(@Body() signUpDto: SignUpUserDto) {
-    await this.userService.setupUser(signUpDto);
+  async signUp(
+    @Body() signUpDto: SignUpDto,
+    @Res({ passthrough: true }) response: Response,
+    @RealIp() clientIp: string,
+  ) {
+    const data = await this.userService.setupUser(signUpDto);
+    return this.authService.signIn(
+      { password: signUpDto.password, identity: data.email },
+      clientIp,
+      response,
+    );
   }
 }

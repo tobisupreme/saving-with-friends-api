@@ -1,10 +1,9 @@
+import { AppUtilities } from '@@/app.utilities';
 import { CrudService } from '@@common/database/crud.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { SignUpDto } from './dto';
 import { UserMaptype } from './user.maptype';
-import { SignUpUserDto } from './dto/create-user.dto';
-import { AppUtilities } from '@@/app.utilities';
-import { SensitiveUserInfo } from '@@/common/constants';
 
 @Injectable()
 export class CoreUserService extends CrudService<
@@ -32,30 +31,51 @@ export class CoreUserService extends CrudService<
     }));
   }
 
-  async setupUser({ userContactInfo, userInfo }: SignUpUserDto) {
-    const identityExists = await this.identityExists(userInfo.email);
+  async setupUser(dto: SignUpDto) {
+    const identityExists = await this.identityExists(dto.email);
     if (identityExists)
-      throw new BadRequestException('Username or email already exists');
+      throw new BadRequestException({
+        code: 'EMAIL_EXISTS',
+        message: 'Signup failed. Email unavailable',
+      });
 
-    const { password, ...createUserPayload } = userInfo;
-    const hashedPassword = await AppUtilities.hashAuthSecret(password);
+    const hashedPassword = await AppUtilities.hashAuthSecret(dto.password);
 
     const user = await this.prismaClient.$transaction(
       async (prisma: PrismaClient) => {
+        const [firstName, ...last] = dto.name.split(' ');
         const { id } = await prisma.userContact.create({
-          data: { ...userContactInfo },
+          data: { firstName, lastName: last?.join(' ') || undefined },
         });
         return await prisma.user.create({
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            contact: {
+              select: { firstName: true, lastName: true, phone: true },
+            },
+          },
           data: {
-            ...createUserPayload,
+            email: dto.email,
             password: hashedPassword,
             contact: { connect: { id } },
           },
-          include: { contact: true },
         });
       },
     );
 
-    return AppUtilities.removeSensitiveData(user, SensitiveUserInfo);
+    return this.transformUserPayload(user);
+  }
+
+  transformUserPayload(user: any) {
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      firstName: user.contact.firstName,
+      lastName: user.contact.lastName,
+      phone: user.contact.phone,
+    };
   }
 }

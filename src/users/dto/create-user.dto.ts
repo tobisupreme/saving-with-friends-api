@@ -73,3 +73,19 @@ export class SignUpUserDto {
   @IsDefined()
   userContactInfo: UserContactDto;
 }
+
+export class SignUpDto {
+  @IsString()
+  @IsNotEmpty()
+  @Transform(({ value }) => value.trim())
+  name: string;
+
+  @IsEmail()
+  @Transform(({ value }) => value.toLowerCase().trim())
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsStrongPassword()
+  password: string;
+}
