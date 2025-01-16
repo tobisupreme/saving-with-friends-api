@@ -2,17 +2,20 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
-  Logger,
+  LoggerService,
   NestInterceptor,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
+import { AppLoggerService } from '../../logger/logger.service';
 
 @Injectable()
 export class RequestInterceptor implements NestInterceptor {
-  private logger: Logger = new Logger(RequestInterceptor.name, {
-    timestamp: true,
-  });
+  private readonly logger: LoggerService;
+
+  constructor(logger: AppLoggerService) {
+    this.logger = logger.createLogger(RequestInterceptor.name);
+  }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const { headers, body, query, url, method } = context
@@ -26,11 +29,13 @@ export class RequestInterceptor implements NestInterceptor {
     delete mQuery.access_token;
     delete mHeaders.authorization;
     delete mBody.password;
-    this.logger.log(`%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%`);
-    this.logger.log(`URL --> ${method} ${url}`);
-    this.logger.log(`headers --> ${JSON.stringify(mHeaders, null, 2)}`);
-    this.logger.log(`body --> ${JSON.stringify(mBody, null, 2)}`);
-    this.logger.log(`query --> ${JSON.stringify(mQuery, null, 2)}`);
+
+    this.logger.log(`Incoming Request: ${method} ${url}`, {
+      headers: mHeaders,
+      body: mBody,
+      query: mQuery,
+      requestId: headers['x-request-id'],
+    });
 
     return next.handle();
   }

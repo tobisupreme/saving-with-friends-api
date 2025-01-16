@@ -6,6 +6,7 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import appConfig from './app.config';
+import { LoggerModule } from './logger/logger.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { CoreUserModule } from './users/user.module';
 
@@ -28,6 +29,7 @@ import { CoreUserModule } from './users/user.module';
     }),
     CoreUserModule,
     TransactionsModule,
+    LoggerModule,
   ],
   controllers: [],
   providers: [JwtStrategy],

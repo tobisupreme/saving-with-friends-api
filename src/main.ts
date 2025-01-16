@@ -10,17 +10,17 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app.module';
-import { transports } from './logger/winston.config';
+import { AppLoggerService } from './logger/logger.service';
 
 async function bootstrap() {
-  const loggerInstance = WinstonModule.createLogger({
-    transports: transports,
-  });
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: loggerInstance,
+    bufferLogs: true,
   });
+
+  const loggerInstance = app.get(AppLoggerService);
+  app.useLogger(loggerInstance);
+
   const configService = app.get<ConfigService>(ConfigService);
 
   const appPort = configService.get('app.port');
@@ -39,7 +39,7 @@ async function bootstrap() {
   });
 
   app.useGlobalInterceptors(
-    new RequestInterceptor(),
+    new RequestInterceptor(loggerInstance),
     new ResponseInterceptor(),
     new ErrorsInterceptor(),
   );
@@ -67,5 +67,9 @@ async function bootstrap() {
   app.enableCors(corsOptions);
 
   await app.listen(appPort);
+  loggerInstance.verbose(
+    `Application is running on: ${await app.getUrl()}`,
+    'Bootstrap',
+  );
 }
 bootstrap();

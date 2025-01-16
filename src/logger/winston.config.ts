@@ -23,12 +23,7 @@ const consoleTransport = new winston.transports.Console({
 export const transports = [
   ...(process.env.NODE_ENV !== 'production' ? [consoleTransport] : []),
   new winston.transports.File({
-    format: winston.format.combine(
-      winston.format.timestamp(),
-      winston.format.printf(({ timestamp, level, message, context, trace }) => {
-        return `${timestamp} [${context}] ${level}: ${message}${trace ? `\n${trace}` : ''}`;
-      }),
-    ),
+    format: winston.format.json(),
     filename: 'logs/winston.log',
   }),
   new SeqTransport({
