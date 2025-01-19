@@ -1,5 +1,4 @@
 import { CacheService } from '@@common/cache/cache.service';
-import { SensitiveUserInfo } from '@@common/constants';
 import { PrismaClientManager } from '@@common/database/prisma-client-manager';
 import {
   CacheKeysEnums,
@@ -12,7 +11,6 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { CookieOptions, Response } from 'express';
 import moment from 'moment';
-import { AppUtilities } from '../app.utilities';
 import { CoreUserService } from '../users/user.service';
 import { SignInDto } from './dto/login.dto';
 
@@ -97,7 +95,7 @@ export class AuthService {
     this.setCookies(accessToken, response);
     return {
       accessToken,
-      user: AppUtilities.removeSensitiveData(user, SensitiveUserInfo),
+      user: this.coreUserService.transformUserPayload(user),
     };
   }
 

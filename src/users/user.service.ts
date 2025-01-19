@@ -73,8 +73,9 @@ export class CoreUserService extends CrudService<
       id: user.id,
       email: user.email,
       username: user.username,
-      firstName: user.contact.firstName,
-      lastName: user.contact.lastName,
+      name: AppUtilities.removeExtraSpacesAndCapitalise(
+        `${user.contact.firstName ?? ''} ${user.contact.lastName ?? ''}`,
+      ),
       phone: user.contact.phone,
     };
   }
