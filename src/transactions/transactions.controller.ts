@@ -3,7 +3,7 @@ import {
   Body,
   Controller,
   Get,
-  Logger,
+  LoggerService,
   Param,
   ParseIntPipe,
   Post,
@@ -16,21 +16,28 @@ import { AppGuard } from '../auth/guards/app.guard';
 import { AuthStrategyType } from '../auth/interfaces';
 import { ApiResponseMeta } from '../common/decorators/response.decorator';
 import { RequestWithUser } from '../common/interfaces';
+import { AppLoggerService } from '../logger/logger.service';
 import { CreateTransactionDto } from './dto';
 import { TransactionsService } from './transactions.service';
 
 @ApiTags('Transactions')
 @Controller('transactions')
 export class TransactionsController {
-  private logger: Logger = new Logger(TransactionsController.name);
-  constructor(private readonly transactionsService: TransactionsService) {}
+  private readonly logger: LoggerService;
+
+  constructor(
+    private readonly transactionsService: TransactionsService,
+    loggerService: AppLoggerService,
+  ) {
+    this.logger = loggerService.createLogger(TransactionsController.name);
+  }
 
   @ApiResponseMeta({
     passthrough: true,
   })
   @Get()
   async getTransactions() {
-    this.logger.log('getting transactions');
+    this.logger.log('Getting transactions', { userId: 'all' });
     const transactions = await this.transactionsService.findMany<{
       id: number;
       amount: number;
