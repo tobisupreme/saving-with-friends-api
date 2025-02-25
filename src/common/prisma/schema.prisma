@@ -43,8 +43,9 @@ model User {
   updatedAt         DateTime      @default(now()) @updatedAt @db.Timestamptz(6)
   transactions      Transaction[]
 
-  activityLogs  UserActivityLog[]
-  userCampaigns CampaignUser[]
+  activityLogs     UserActivityLog[]
+  userCampaigns    CampaignUser[]
+  createdCampaigns Campaign[]
 
   @@map("users")
 }
@@ -130,14 +131,21 @@ model Balance {
 
 model Campaign {
   id                   Int                    @id @default(autoincrement())
-  balance              Decimal
-  shortDescription     String
-  longDescription      String
+  name                 String                 @db.VarChar(50)
+  code                 String                 @unique
+  balance              Decimal                @default(0)
+  shortDescription     String                 @db.VarChar(100)
+  longDescription      String                 @db.Text
   campaignType         String
   startDate            DateTime?              @db.Timestamptz(6)
   endDate              DateTime?              @db.Timestamptz(6)
+  createdAt            DateTime               @default(now()) @db.Timestamptz(6)
+  creatorId            Int
+  createdBy            User                   @relation(fields: [creatorId], references: [id])
+  updatedAt            DateTime               @default(now()) @updatedAt @db.Timestamptz(6)
   campaignUsers        CampaignUser[]
   campaignTransactions CampaignTransactions[]
+  invitations          CampaignInvitation[]
 
   @@map("campaigns")
 }
@@ -146,6 +154,7 @@ model CampaignUser {
   id         Int      @id @default(autoincrement())
   userId     Int      @map("user_id")
   campaignId Int      @map("campaign_id")
+  type       String   @default("member") // member, admin
   status     Boolean  @default(true)
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
   updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
@@ -169,4 +178,20 @@ model CampaignTransactions {
 
   @@index([campaignId, transactionId])
   @@map("campaign_transactions")
+}
+
+model CampaignInvitation {
+  id         Int      @id @default(autoincrement())
+  campaignId Int      @map("campaign_id")
+  email      String   @db.VarChar(50)
+  token      String   @unique
+  expiresAt  DateTime @db.Timestamptz(6)
+  status     String   @default("pending") // pending, accepted, expired
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  campaign   Campaign @relation(fields: [campaignId], references: [id])
+
+  @@index([token])
+  @@index([campaignId, email])
+  @@map("campaign_invitations")
 }
