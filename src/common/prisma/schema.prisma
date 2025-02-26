@@ -33,7 +33,8 @@ model User {
   passwordHistory   Json?         @db.JsonB
   passwordAttempt   Int?          @db.SmallInt
   lastLogin         DateTime?     @db.Timestamptz(6)
-  lastLoginIp       String?        @db.Text
+  lastLoginIp       String?       @db.Text
+  isVerified        Boolean       @default(false)
   status            Boolean       @default(true)
   contactId         Int           @unique
   contact           UserContact   @relation(fields: [contactId], references: [id])
