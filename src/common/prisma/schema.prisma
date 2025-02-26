@@ -35,6 +35,7 @@ model User {
   lastLogin         DateTime?     @db.Timestamptz(6)
   lastLoginIp       String?       @db.Text
   isVerified        Boolean       @default(false)
+  canCreateCampaign Boolean       @default(false)
   status            Boolean       @default(true)
   contactId         Int           @unique
   contact           UserContact   @relation(fields: [contactId], references: [id])
