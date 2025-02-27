@@ -2,7 +2,7 @@ import { CacheService } from '@@common/cache/cache.service';
 import { PrismaClientManager } from '@@common/database/prisma-client-manager';
 import {
   CacheKeysEnums,
-  JwtPayload,
+  JwtSessionPayload,
   JwtSignPayload,
 } from '@@common/interfaces';
 import { CorePasswordPolicyService } from '@@password-policy/core-password-policy.service';
@@ -70,11 +70,12 @@ export class AuthService {
     });
     const [, , sessionId] = accessToken.split('.');
 
-    const payload: JwtPayload = {
+    const payload: JwtSessionPayload = {
       userId: user.id,
       sessionId,
       email: user.email,
       username: user.username,
+      user,
     };
     await this.cacheService.set(
       `${CacheKeysEnums(this.appName).TOKENS}:${user.id}:${sessionId}`,

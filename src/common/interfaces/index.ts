@@ -1,3 +1,4 @@
+import { User, UserContact } from '@prisma/client';
 import { Request } from 'express';
 
 export abstract class SeedRunner {
@@ -39,11 +40,12 @@ export enum SortDirection {
   DESC = 'desc',
 }
 
-export interface JwtPayload {
+export interface JwtSessionPayload {
   userId: number;
   sessionId: string;
   email: string;
   username?: string;
+  user: User & { contact: UserContact };
 }
 
 export interface JwtSignPayload {
@@ -51,7 +53,7 @@ export interface JwtSignPayload {
 }
 
 export interface RequestWithUser extends Request {
-  user: JwtPayload;
+  user: JwtSessionPayload;
   permittedFields?: any;
   selectFields?: any;
 }
