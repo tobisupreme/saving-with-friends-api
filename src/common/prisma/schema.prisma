@@ -186,14 +186,13 @@ model CampaignInvitation {
   id         Int      @id @default(autoincrement())
   campaignId Int      @map("campaign_id")
   email      String   @db.VarChar(50)
-  token      String   @unique
+  token      String   @unique @db.VarChar(20)
   expiresAt  DateTime @db.Timestamptz(6)
   status     String   @default("pending") // pending, accepted, expired
   createdAt  DateTime @default(now()) @db.Timestamptz(6)
   updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
   campaign   Campaign @relation(fields: [campaignId], references: [id])
 
-  @@index([token])
   @@index([campaignId, email])
   @@map("campaign_invitations")
 }
