@@ -1,0 +1,21 @@
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { JwtSessionPayload } from '../../common/interfaces';
+
+@Injectable()
+export class CreateCampaignGuard implements CanActivate {
+  canActivate(
+    context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    const request = context.switchToHttp().getRequest();
+
+    const user = request?.user as JwtSessionPayload;
+    user.user.canCreateCampaign = true;
+
+    if (!user || !user.user?.canCreateCampaign) {
+      return false;
+    }
+
+    return true;
+  }
+}
