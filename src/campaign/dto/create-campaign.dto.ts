@@ -1,7 +1,6 @@
 import { Transform } from 'class-transformer';
 import {
   IsDateString,
-  IsDecimal,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -32,9 +31,11 @@ export class CreateCampaignDto {
 
   @IsOptional()
   @IsDateString()
+  @Transform(({ value }) => new Date(value).toISOString())
   startDate?: Date;
 
   @IsOptional()
   @IsDateString()
+  @Transform(({ value }) => value && new Date(value).toISOString())
   endDate?: Date;
 }

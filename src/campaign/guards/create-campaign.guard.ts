@@ -10,7 +10,6 @@ export class CreateCampaignGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     const user = request?.user as JwtSessionPayload;
-    user.user.canCreateCampaign = true;
 
     if (!user || !user.user?.canCreateCampaign) {
       return false;
